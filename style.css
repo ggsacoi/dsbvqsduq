@@ -1,0 +1,10 @@
+body {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+video {
+    width: 50%;
+    height: auto;
+    background-color: gray;
+}
