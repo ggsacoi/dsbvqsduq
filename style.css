@@ -6,9 +6,13 @@ body {
     text-align: center;
     flex-direction: column;
 }
+h3{
+    display: none;
+}
 video {
     width: 50%;
     background-color: gray;
+    display: none;
 }
 div {
     width: 100vw;
