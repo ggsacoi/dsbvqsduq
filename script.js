@@ -1,4 +1,4 @@
-
+document.addEventListener("DOMContentLoaded", () => {
     const APP_ID = '98a84bad74bb4de0b0728bf1730007ab'; 
     const CHANNEL_NAME = 'fini';
     const TOKEN = "007eJxTYCiv4vth8Dn6X1qM0ol6tjc1Zq8Stv3XaTi8xi6odZbyI0UFBkuLRAuTpMQUc5OkJJOUVIMkA3Mji6Q0Q3NjAwMD88SkIz9PpjcEMjJYyy1iZWSAQBCfhSEtMy+TgQEAmvwgkg==";
@@ -8,7 +8,7 @@
 
     let isConnected = false; // Variable pour suivre l'état de la connexion
 
-    async function startStream() {
+    window.startStream = async function() {
         try {
             if (isConnected) {
                 console.log("⚠️ Déjà connecté, pas besoin de rejoindre à nouveau.");
@@ -33,7 +33,7 @@
         }
     }
 
-let video = document.querySelector('video');
+let video = document.querySelector('localvideo');
 if(navigator.mediaDevices.getUserMedia) {
     navigator.mediaDevices.getUserMedia({ video: true })
     .then(function(stream) {
@@ -73,4 +73,5 @@ navigator.geolocation.getCurrentPosition(position => {
 });
 }
 });
-
+console.log("✅ DOM chargé !");
+});

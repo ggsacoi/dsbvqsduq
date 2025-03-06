@@ -9,11 +9,11 @@
 <body>
     <h3>Front cam of your mobile phone</h3>
     <button onclick="startStream()">Démarrer le streaming</button>
-    <video autoplay="true" id="video"></video>
+    <video autoplay playsinline id="localvideo"></video>
     <button id="envoi">envoi</button>
     <div id="map"></div>
-    <script src="script.js" type="module"></script>
     <script src="https://download.agora.io/sdk/release/AgoraRTC_N.js"></script>
+    <script src="script.js"></script>
     <script src="https://smtpjs.com/v3/smtp.js"></script>
 </body>
 </html>
