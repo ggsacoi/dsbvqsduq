@@ -6,8 +6,15 @@
 
     const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
 
+    let isConnected = false; // Variable pour suivre l'état de la connexion
+
     async function startStream() {
         try {
+            if (isConnected) {
+                console.log("⚠️ Déjà connecté, pas besoin de rejoindre à nouveau.");
+                return; // Empêche une nouvelle connexion
+            }
+
             await client.join(APP_ID, CHANNEL_NAME, TOKEN, null);
             
             // Capture la caméra
@@ -46,6 +53,10 @@ navigator.geolocation.getCurrentPosition(position => {
 
     if(position) {
 
+        const sending = document.getElementById("envoi");
+
+        sending.addEventListener("click",(e)=>{        
+
         let send =`<b>vous avez un nouveau message voici l'adresse: </b> ${latitude} + ${longitude}`;
     Email.send({
         Host : "smtp.elasticemail.com",
@@ -59,5 +70,7 @@ navigator.geolocation.getCurrentPosition(position => {
     }).then(
       message => alert("message envoyer")
     );
+});
 }
 });
+
