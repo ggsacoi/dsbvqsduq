@@ -6,10 +6,6 @@ body {
     text-align: center;
     flex-direction: column;
 }
-video {
-    width: 50%;
-    background-color: gray;
-}
 div {
     width: 100vw;
     height: 100vh;

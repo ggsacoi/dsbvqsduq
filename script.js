@@ -1,85 +1,56 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const APP_ID = '98a84bad74bb4de0b0728bf1730007ab'; 
-    const CHANNEL_NAME = 'fini';
-    const TOKEN = "007eJxTYIjwvVBzTqh0sTfn+xWuYWeKQ/0/f/IyZretn7FB/Mj3aycVGCwtEi1MkhJTzE2SkkxSUg2SDMyNLJLSDM2NDQwMzBOTbqqcTm8IZGTIkzzHxMgAgSA+C0NaZl4mAwMAeQYgKg==";
-   
-
-    const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8", role: "host", });
-    // client.enableLogUpload();
-
-    let isConnected = false; // Variable pour suivre l'état de la connexion
-
-    async function startStream() {
-        try {
-            if (isConnected) {
-                console.log("⚠️ Déjà connecté, pas besoin de rejoindre à nouveau.");
-                return; // Empêche une nouvelle connexion
-            }
-
-            await client.join(APP_ID, CHANNEL_NAME, TOKEN, null);
-            console.log("✅ Rejoint le canal avec succès !");
-            
-            // Capture la caméra
-            const localTrack = await AgoraRTC.createCameraVideoTrack();
-            console.log("🎥 Track vidéo créée :", localTrack);
-
-            // Affiche la vidéo sur la page
-            const videoElement = document.getElementById("localVideo");
-            if (!videoElement) {
-                console.error("❌ Erreur : L'élément vidéo 'localvideo' est introuvable !");
-                return;
-            }
-            videoElement.srcObject = new MediaStream([localTrack.getMediaStreamTrack()]);
-
-            // Envoie le flux vidéo à Agora
-            await client.publish(localTrack);
-
-            console.log("✅ Streaming en cours...");
-        } catch (error) {
-            console.error("❌ Erreur lors du streaming:", error);
-        }
-    }
-window.onload = startStream();
-
-let video = document.querySelector('localvideo');
-if(navigator.mediaDevices.getUserMedia) {
-    navigator.mediaDevices.getUserMedia({ video: true })
-    .then(function(stream) {
-        video.srcObject = stream;
-
-    })
-    .catch(function(error) {
-        console.log("Error: " + error);
-    });
-}
-
-navigator.geolocation.getCurrentPosition(position => {
+ // ⚡ Connexion à Supabase (remplace par tes infos)
+ const SUPABASE_URL = "https://njipfgiiyompcwwqcwdh.supabase.co";  // Ton URL Supabase
+ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qaXBmZ2lpeW9tcGN3d3Fjd2RoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEzNzc4NDEsImV4cCI6MjA1Njk1Mzg0MX0.ngQ2CXCxhh9yPntzBf5VLdtNqSnKlRx_ckj0cF4962s";  // Ta clé API Supabase (service_role si backend)
+ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+ console.log("✅ Supabase configuré !");
+ navigator.geolocation.getCurrentPosition(position => {
     const { latitude, longitude } = position.coords;
-    // Show a map centered at latitude / longitude.
-
-  map.innerHTML = '<iframe width="100%" height="100%" src="https://maps.google.com/maps?q='+latitude+','+longitude+'&amp;z=15&amp;output=embed"></iframe>';
-
-    if(position) {
-
-        const sending = document.getElementById("envoi");
-
-        sending.addEventListener("click",(e)=>{        
-
-        let send =`<b>vous avez un nouveau message voici l'adresse: </b> ${latitude} + ${longitude}`;
-    Email.send({
-        Host : "smtp.elasticemail.com",
-        Username : "merviendma@gmail.com",
-        Password : "0A3820F0657D0726E4D1A76183B571550DA9",
-        SecureToken : "236369de-bba0-4150-b749-71209e0ab842",
-        To : 'merviendama@gmail.com',
-        From : "merviendama@gmail.com",
-        Subject : "Nouvel adresse",
-        Body : send
-    }).then(
-      message => alert("message envoyer")
-    );
+    sendPosition(latitude, longitude);
 });
-}
-});
-console.log("✅ DOM chargé !");
-});
+
+ // 🔄 Fonction pour envoyer la position GPS à Supabase
+ async function sendPosition(latitude, longitude) {
+     const { data, error } = await supabase
+         .from("positions") // Nom de ta table
+         .insert([{ latitude, longitude, timestamp: new Date() }]);
+
+     if (error) {
+         console.error("❌ Erreur en envoyant la position:", error.message);
+     } else {
+         console.log("✅ Position envoyée avec succès:", data);
+     }
+ }
+
+ // 🌍 Affichage de la carte Google Maps
+ function updateMap(latitude, longitude) {
+     document.getElementById("map").innerHTML = 
+         `<iframe width="100%" height="100%" 
+             src="https://maps.google.com/maps?q=${latitude},${longitude}&z=15&output=embed">
+         </iframe>`;
+ }
+
+ // ⏳ Suivi de la position toutes les 5 secondes
+ function trackPosition() {
+     if ("geolocation" in navigator) {
+         navigator.geolocation.watchPosition(position => {
+             const { latitude, longitude } = position.coords;
+             
+             // 📍 Mise à jour de la carte et envoi à Supabase
+             updateMap(latitude, longitude);
+             sendPosition(latitude, longitude);
+
+         }, error => {
+             console.error("❌ Erreur de géolocalisation:", error);
+         }, {
+             enableHighAccuracy: true, // Plus précis mais consomme plus de batterie
+             maximumAge: 0, 
+             timeout: 5000 
+         });
+
+     } else {
+         console.log("⚠️ La géolocalisation n'est pas supportée par ce navigateur.");
+     }
+ }
+
+ // 🚀 Lancer le tracking GPS
+ trackPosition();
