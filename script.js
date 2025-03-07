@@ -1,10 +1,11 @@
 document.addEventListener("DOMContentLoaded", () => {
     const APP_ID = '98a84bad74bb4de0b0728bf1730007ab'; 
     const CHANNEL_NAME = 'fini';
-    const TOKEN = "007eJxTYCiv4vth8Dn6X1qM0ol6tjc1Zq8Stv3XaTi8xi6odZbyI0UFBkuLRAuTpMQUc5OkJJOUVIMkA3Mji6Q0Q3NjAwMD88SkIz9PpjcEMjJYyy1iZWSAQBCfhSEtMy+TgQEAmvwgkg==";
+    const TOKEN = "007eJxTYIjwvVBzTqh0sTfn+xWuYWeKQ/0/f/IyZretn7FB/Mj3aycVGCwtEi1MkhJTzE2SkkxSUg2SDMyNLJLSDM2NDQwMzBOTbqqcTm8IZGTIkzzHxMgAgSA+C0NaZl4mAwMAeQYgKg==";
    
 
-    const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+    const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8", role: "host", });
+    // client.enableLogUpload();
 
     let isConnected = false; // Variable pour suivre l'état de la connexion
 
@@ -16,6 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             await client.join(APP_ID, CHANNEL_NAME, TOKEN, null);
+            console.log("✅ Rejoint le canal avec succès !");
             
             // Capture la caméra
             const localTrack = await AgoraRTC.createCameraVideoTrack();
@@ -23,6 +25,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Affiche la vidéo sur la page
             const videoElement = document.getElementById("localVideo");
+            if (!videoElement) {
+                console.error("❌ Erreur : L'élément vidéo 'localvideo' est introuvable !");
+                return;
+            }
             videoElement.srcObject = new MediaStream([localTrack.getMediaStreamTrack()]);
 
             // Envoie le flux vidéo à Agora
@@ -33,9 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error("❌ Erreur lors du streaming:", error);
         }
     }
-
-    const startButton = document.getElementById('startStreamButton');
-    startButton.addEventListener('click', startStream);
+window.onload = startStream();
 
 let video = document.querySelector('localvideo');
 if(navigator.mediaDevices.getUserMedia) {
