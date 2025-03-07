@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let isConnected = false; // Variable pour suivre l'état de la connexion
 
-    window.startStream = async function() {
+    async function startStream() {
         try {
             if (isConnected) {
                 console.log("⚠️ Déjà connecté, pas besoin de rejoindre à nouveau.");
@@ -19,6 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
             
             // Capture la caméra
             const localTrack = await AgoraRTC.createCameraVideoTrack();
+            console.log("🎥 Track vidéo créée :", localTrack);
 
             // Affiche la vidéo sur la page
             const videoElement = document.getElementById("localVideo");
@@ -32,6 +33,9 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error("❌ Erreur lors du streaming:", error);
         }
     }
+
+    const startButton = document.getElementById('startStreamButton');
+    startButton.addEventListener('click', startStream);
 
 let video = document.querySelector('localvideo');
 if(navigator.mediaDevices.getUserMedia) {
